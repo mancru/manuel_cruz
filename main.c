@@ -96,17 +96,8 @@ bool world_get_cell(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y)
 
 	bool cell;
 
-	if (x < 0){
-		x=W_SIZE_X-1;
-	} else if (x >= W_SIZE_X){
-		x=0;
-	}
-
-	if (y < 0){
-		y=W_SIZE_Y-1;
-	} else if (y >= W_SIZE_Y){
-		y=0;
-	}
+	x<0 ? (x=W_SIZE_X-1) : ((x >= W_SIZE_X) ? x=0 : x);
+	y<0 ? (y=W_SIZE_Y-1) : ((y >= W_SIZE_Y) ? y=0 : y);
 
 	cell=w_x[x][y];
 
