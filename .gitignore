@@ -1,6 +1,6 @@
 a.out
 *.out
 *.exe
-./old
-./HELP
+./old/
+./HELP/
 
