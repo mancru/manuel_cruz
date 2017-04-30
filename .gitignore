@@ -1,6 +1,7 @@
+# Files and folders to be ignored
 a.out
 *.out
 *.exe
-./old/
-./HELP/
-
+./old/ # Trash files folder
+./HELP/ # Useless files folder
+*~ # Temporary files
