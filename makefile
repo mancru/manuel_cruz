@@ -5,13 +5,13 @@ CFLAGS = -Wall -Werror
 all : gol main tgol clean
 
 tgol : main.o gol.o
-	gcc main.o gol.o -o tgol
+	gcc $(CFLAGS) main.o gol.o -o tgol
 
 main : main.c
-	gcc -c main.c
+	gcc $(CFLAGS) -c main.c
 
 gol : gol.c
-	gcc -c gol.c
+	gcc $(CFLAGS) -c gol.c
 
 clean :
 	rm *.o *.out
