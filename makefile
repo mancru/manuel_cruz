@@ -1,8 +1,8 @@
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -std=c99
 
 .PHONY : all clean
 
-all : gol main tgol clean
+all : tgol
 
 tgol : main.o gol.o
 	gcc $(CFLAGS) main.o gol.o -o tgol
