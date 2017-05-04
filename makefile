@@ -2,10 +2,16 @@ CFLAGS = -Wall -Werror
 
 .PHONY : all clean
 
-all : tgol
+all : gol main tgol clean
 
-tgol : main.c
-	gcc main.c gol.c -o tgol
+tgol : main.o gol.o
+	gcc main.o gol.o -o tgol
+
+main : main.c
+	gcc -c main.c
+
+gol : gol.c
+	gcc -c gol.c
 
 clean :
 	rm *.o *.out
