@@ -1,10 +1,9 @@
-#ifndef gol_h
-#define gol_h
+#ifndef _GOL_H_
+#define _GOL_H_
 #define W_SIZE_X 11
 #define W_SIZE_Y 11
 #define ALIVE 1
 #define DEAD 0
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -29,3 +28,5 @@ int world_count_neighbors(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y);
 bool world_get_cell(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y);
 
 void world_copy(bool w_y[W_SIZE_X][W_SIZE_Y], bool w_x[W_SIZE_X][W_SIZE_Y]);
+
+#endif
