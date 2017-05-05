@@ -7,10 +7,10 @@ all : tgol
 tgol : main.o gol.o
 	gcc $(CFLAGS) main.o gol.o -o tgol
 
-main : main.c
+main.o : main.c
 	gcc $(CFLAGS) -c main.c
 
-gol : gol.c
+gol.o : gol.c
 	gcc $(CFLAGS) -c gol.c
 
 clean :
