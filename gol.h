@@ -17,16 +17,23 @@
  * - Copia un mundo en otro.
  */
 
-void world_init(bool w_x[W_SIZE_X][W_SIZE_Y]);
+struct world {
+	bool w1[W_SIZE_X][W_SIZE_Y];
+	bool w2[W_SIZE_X][W_SIZE_Y];
+};
 
-void world_print(bool w_x[W_SIZE_X][W_SIZE_Y]);
+void world_init();
 
-void world_step(bool w_1[W_SIZE_X][W_SIZE_Y], bool w_2[W_SIZE_X][W_SIZE_Y]);
+void world_print();
 
-int world_count_neighbors(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y);
+void world_step();
 
-bool world_get_cell(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y);
+int world_count_neighbors();
 
-void world_copy(bool w_y[W_SIZE_X][W_SIZE_Y], bool w_x[W_SIZE_X][W_SIZE_Y]);
+bool world_get_cell();
+
+void world_copy();
+
+void world_initB();
 
 #endif

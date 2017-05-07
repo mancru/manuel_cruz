@@ -1,36 +1,36 @@
 #include "gol.h"
 
-void world_init(bool w_x[W_SIZE_X][W_SIZE_Y])
+void world_init(struct world * ptrw)
 {
 	
 	for (int i=0;i<W_SIZE_X;i++){
 		for (int j=0;j<W_SIZE_Y;j++){
-			w_x[i][j]=DEAD;
+			(*ptrw).w1[i][j]=DEAD;
 		}
 	}
 	/* Patrón del glider: */
-	w_x[0][1]=ALIVE;
-	w_x[1][2]=ALIVE;
-	w_x[2][0]=ALIVE;
-	w_x[2][1]=ALIVE;
-	w_x[2][2]=ALIVE;
+	(*ptrw).w1[0][1]=ALIVE;
+	(*ptrw).w1[1][2]=ALIVE;
+	(*ptrw).w1[2][0]=ALIVE;
+	(*ptrw).w1[2][1]=ALIVE;
+	(*ptrw).w1[2][2]=ALIVE;
 }
 
-void world_print(bool w_x[W_SIZE_X][W_SIZE_Y])
+void world_print(const struct world * ptrw)
 {
 
 	bool cell;
 
 	for (int i=0;i<W_SIZE_X;i++){
 		for (int j=0;j<W_SIZE_Y;j++){
-			cell=w_x[i][j];
-			cell ? printf("# ") : printf(". ");
+			cell=(*ptrw).w1[i][j];
+			printf ("%s ", cell ? "#" : ".");
 		}
 		printf("\n");
 	}
 }
 
-void world_step(bool w_1[W_SIZE_X][W_SIZE_Y], bool w_2[W_SIZE_X][W_SIZE_Y])
+void world_step(struct world * ptrw)
 {
 
 	int v;
@@ -38,32 +38,32 @@ void world_step(bool w_1[W_SIZE_X][W_SIZE_Y], bool w_2[W_SIZE_X][W_SIZE_Y])
 
 	for (int i = 0; i < W_SIZE_X; i++) {
 		for (int j = 0; j < W_SIZE_Y; j++) {
-			cell=w_2[i][j];
-			v = world_count_neighbors(w_1, i, j);
-			w_2[i][j] = (v==3) || (cell && v==2);
+			cell=(*ptrw).w1[i][j];
+			v = world_count_neighbors(&ptrw, i, j);
+			(*ptrw).w2[i][j] = (v==3) || (cell && v==2);
 		}
 	}
-	world_copy(w_2, w_1);
+	world_copy(&ptrw);
 }
 
-int world_count_neighbors(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y)
+int world_count_neighbors(const struct world ** ptrw, int x, int y)
 {
 
 	int count=0;
 
-	count += world_get_cell(w_x, x - 1, y - 1);
-	count += world_get_cell(w_x, x - 1, y	 );
-	count += world_get_cell(w_x, x - 1, y + 1);
-	count += world_get_cell(w_x, x    , y - 1);
-	count += world_get_cell(w_x, x    , y + 1);
-	count += world_get_cell(w_x, x + 1, y - 1);
-	count += world_get_cell(w_x, x + 1, y	 );
-	count += world_get_cell(w_x, x + 1, y + 1);
+	count += world_get_cell(&ptrw, x - 1, y - 1);
+	count += world_get_cell(&ptrw, x - 1, y    );
+	count += world_get_cell(&ptrw, x - 1, y + 1);
+	count += world_get_cell(&ptrw, x    , y - 1);
+	count += world_get_cell(&ptrw, x    , y + 1);
+	count += world_get_cell(&ptrw, x + 1, y - 1);
+	count += world_get_cell(&ptrw, x + 1, y    );
+	count += world_get_cell(&ptrw, x + 1, y + 1);
 	
 	return count;
 }
 
-bool world_get_cell(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y)
+bool world_get_cell(const struct world *** ptrw, int x, int y)
 {
 
 	bool cell;
@@ -80,17 +80,17 @@ bool world_get_cell(bool w_x[W_SIZE_X][W_SIZE_Y], int x, int y)
 		y=0;
 	}
 
-	cell=w_x[x][y];
+	cell=(***ptrw).w1[x][y];
 
 	return cell;
 
 }
 
-void world_copy(bool w_y[W_SIZE_X][W_SIZE_Y], bool w_x[W_SIZE_X][W_SIZE_Y])
+void world_copy(struct world ** ptrw)
 {
 	for (int i=0;i<W_SIZE_X;i++){
 		for (int j=0;j<W_SIZE_Y;j++){
-			w_x[i][j]=w_y[i][j];
+			(**ptrw).w1[i][j]=(**ptrw).w2[i][j];
 		}
 	}
 }
