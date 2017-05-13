@@ -8,32 +8,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/* Funciones para:
- * - Inicializar el mundo.
- * - Imprimirlo.
- * - Verificar el estado de las célucas en un mundo y guardar dicho estado en otro.
- * - Devolver el número de células vecinas vivas.
- * - Devuelve el estado de la célula.
- * - Copia un mundo en otro.
- */
-
 struct world {
 	bool w1[W_SIZE_X][W_SIZE_Y];
 	bool w2[W_SIZE_X][W_SIZE_Y];
 };
 
-void world_init();
+void world_init(struct world * ptrw);
+void world_print(const struct world * ptrw);
+void world_step(struct world * ptrw);
+int world_count_neighbors(const struct world * ptrw, int x, int y);
+bool world_get_cell(const struct world * ptrw, int x, int y);
+void world_copy(struct world * ptrw);
 
-void world_print();
-
-void world_step();
-
-int world_count_neighbors();
-
-bool world_get_cell();
-
-void world_copy();
-
-void world_initB();
 
 #endif
