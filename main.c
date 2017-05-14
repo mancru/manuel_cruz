@@ -7,14 +7,20 @@ int main()
 {
 	int i = 0;
 
-	struct world w;
-	world_init(&w);
+	struct world * w;
+	w = world_alloc(WORLD_X, WORLD_Y);
+	if (!w) {
+		perror("Can't allocate world");
+		exit(EXIT_FAILURE);
+	}
 
 	do {
 		printf("\033cIteration %d\n", i++);
-		world_print(&w);
-		world_step(&w);
+		world_print(w);
+		world_iterate(w);
 	} while (getchar() != 'q');
+
+	world_free(w);
 
 	return EXIT_SUCCESS;
 }
