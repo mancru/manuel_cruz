@@ -21,14 +21,14 @@ struct world *world_alloc(int size_x, int size_y)
 
 	bool * w1;
 	w1 = (bool *) malloc ( size_x * size_y * sizeof(bool) );
-	if (!w){
+	if (!w1){
 		printf("World 1 could not be allocated!");
 		exit(-11);
 	}
 
 	bool * w2;
 	w2 = (bool *) malloc ( size_x * size_y * sizeof(bool) );
-	if (!w){
+	if (!w2){
 		printf("World 2 could not be allocated!");
 		exit(-12);
 	}
