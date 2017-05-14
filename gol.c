@@ -18,21 +18,18 @@ struct world *world_alloc(int size_x, int size_y)
 	w = (struct world *) malloc (sizeof(struct world));
 	if (!w)
 		return NULL;
-
 	bool * w1;
 	w1 = (bool *) malloc ( size_x * size_y * sizeof(bool) );
 	if (!w1){
-		printf("World 1 could not be allocated!");
-		exit(-11);
+		perror("World 1 could not be allocated!\n");
+		return NULL;
 	}
-
 	bool * w2;
 	w2 = (bool *) malloc ( size_x * size_y * sizeof(bool) );
 	if (!w2){
-		printf("World 2 could not be allocated!");
-		exit(-12);
+		perror("World 2 could not be allocated!\n");
+		return NULL;
 	}
-
 	w->size_x = size_x;
 	w->size_y = size_y;
 	w->cells[0] = w1;
@@ -40,15 +37,15 @@ struct world *world_alloc(int size_x, int size_y)
 
 	for (int i=0;i<size_x;i++){
 		for (int j=0;j<size_y;j++){
-			* (w1 + i*(w->size_x)+j) = DEAD;
+			set_cell(w, 0, i, j, DEAD);
 		}
 	}
 	/* Patrón del glider: */
-	* (w1 + 0*(w->size_x) +1) = ALIVE;
-	* (w1 + 1*(w->size_x) +2) = ALIVE;
-	* (w1 + 2*(w->size_x) +0) = ALIVE;
-	* (w1 + 2*(w->size_x) +1) = ALIVE;
-	* (w1 + 2*(w->size_x) +2) = ALIVE;
+	set_cell(w, 0, 0, 1, ALIVE);
+	set_cell(w, 0, 1, 2, ALIVE);
+	set_cell(w, 0, 2, 0, ALIVE);
+	set_cell(w, 0, 2, 1, ALIVE);
+	set_cell(w, 0, 2, 2, ALIVE);
 
 	return w;
 }
@@ -56,10 +53,9 @@ struct world *world_alloc(int size_x, int size_y)
 void world_print(const struct world * w)
 {
 	bool cell;
-
 	for (int i=0; i < w->size_x ;i++){
 		for (int j=0;j < w->size_y ;j++){
-			cell = * (w->cells[0] + i*(w->size_x)+j);
+			cell = get_cell(w, i, j);
 			printf ("%s ", cell ? "#" : ".");
 		}
 		printf("\n");
@@ -71,14 +67,10 @@ void world_iterate(struct world *w)
 	int n_alive_neighbors;
 	bool cell;
 	void * keep_world_address;
-
 	for (int i = 0; i < w->size_x; i++){
 		for (int j = 0; j < w->size_y; j++){
-
-			cell = * (w->cells[0] + i*(w->size_x)+j);
-
+			cell = get_cell(w, i, j);
 			n_alive_neighbors = count_neighbors(w, i, j);
-
 			if ((n_alive_neighbors==3) || (cell && n_alive_neighbors==2)){
 				set_cell(w, 1, i, j, ALIVE);
 			} else {
@@ -86,7 +78,6 @@ void world_iterate(struct world *w)
 			}
 		}
 	}
-
 	keep_world_address = w->cells[0];
 	w->cells[0] = w->cells[1];
 	w->cells[1] = keep_world_address;
@@ -95,7 +86,6 @@ void world_iterate(struct world *w)
 static int count_neighbors(const struct world *w, int x, int y)
 {
 	int count=0;
-
 	count += get_cell (w, x - 1, y - 1);
 	count += get_cell (w, x - 1, y    );
 	count += get_cell (w, x - 1, y + 1);
@@ -104,7 +94,6 @@ static int count_neighbors(const struct world *w, int x, int y)
 	count += get_cell (w, x + 1, y - 1);
 	count += get_cell (w, x + 1, y    );
 	count += get_cell (w, x + 1, y + 1);
-	
 	return count;
 }
 
@@ -118,11 +107,8 @@ static bool get_cell(const struct world *w, int x, int y)
 	bool cell;
 	int * ptrx = &x;
 	int * ptry = &y;
-
 	fix_coords(w, ptrx, ptry);
-
 	cell = * (w->cells[0] + x*(w->size_x)+y);
-
 	return cell;
 }
 
