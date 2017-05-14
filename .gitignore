@@ -2,6 +2,4 @@
 a.out
 *.out
 *.exe
-./old/ # Trash files folder
-./HELP/ # Useless files folder
 *~ # Temporary files
