@@ -1,4 +1,5 @@
 #include "gol.h"
+#include <time.h>
 
 struct world
 {
@@ -12,8 +13,11 @@ static bool get_cell(const struct world *w, int x, int y);
 static void set_cell(struct world *w, int buf, int x, int y, bool val);
 static int count_neighbors(const struct world *w, int x, int y);
 
-struct world *world_alloc(int size_x, int size_y)
+struct world *world_alloc(struct config * config)
 {
+	const int size_x=config->size_x;
+	const int size_y=config->size_y;
+
 	struct world * w;
 	w = (struct world *) malloc (sizeof(struct world));
 	if (!w)
@@ -40,14 +44,25 @@ struct world *world_alloc(int size_x, int size_y)
 			set_cell(w, 0, i, j, DEAD);
 		}
 	}
+
+	if ( config->init_mode == CFG_DEFAULT || config->init_mode == CFG_GLIDER ){
 	/* Patrón del glider: */
-	set_cell(w, 0, 0, 1, ALIVE);
-	set_cell(w, 0, 1, 2, ALIVE);
-	set_cell(w, 0, 2, 0, ALIVE);
-	set_cell(w, 0, 2, 1, ALIVE);
-	set_cell(w, 0, 2, 2, ALIVE);
+		set_cell(w, 0, 0, 1, ALIVE);
+		set_cell(w, 0, 1, 2, ALIVE);
+		set_cell(w, 0, 2, 0, ALIVE);
+		set_cell(w, 0, 2, 1, ALIVE);
+		set_cell(w, 0, 2, 2, ALIVE);
+	} else if ( config->init_mode == CFG_RANDOM ){
+		srand(time(0));
+		for (int i = 0; i < w->size_x; i++){
+			for (int j = 0; j < w->size_y; j++){
+				set_cell(w, 0, i, j, rand()%2);
+			}
+		}
+	}
 
 	return w;
+
 }
 
 void world_print(const struct world * w)
