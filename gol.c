@@ -114,7 +114,7 @@ static int count_neighbors(const struct world *w, int x, int y)
 
 static void set_cell(struct world *w, int buf, int x, int y, bool val)
 {
-	* (w->cells[buf] + x*(w->size_x)+y) = val;
+	* (w->cells[buf] + x*(w->size_y)+y) = val;
 }
 
 static bool get_cell(const struct world *w, int x, int y)
@@ -123,7 +123,7 @@ static bool get_cell(const struct world *w, int x, int y)
 	int * ptrx = &x;
 	int * ptry = &y;
 	fix_coords(w, ptrx, ptry);
-	cell = * (w->cells[0] + x*(w->size_x)+y);
+	cell = * (w->cells[0] + x*(w->size_y)+y);
 	return cell;
 }
 
