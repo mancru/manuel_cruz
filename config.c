@@ -15,7 +15,7 @@ static const struct option long_options[] =
 	{"help",   no_argument,       0, 'h'},
 	{"size_x", required_argument, 0, 'x'},
 	{"size_y", required_argument, 0, 'y'},
-	{"init", optional_argument, 0, 'i'},
+	{"init", required_argument, 0, 'i'},
 	{0, 0, 0, 0}
 };
 
@@ -69,18 +69,19 @@ static bool check_config(const struct config *config)
 
 	correct &= config->size_x > 0;
 	correct &= config->size_y > 0;
-	correct &= config->init_mode < _CFG_MAX_;
+	correct &= config->init_mode != CFG_NOT_DEF;
 	return correct;
 }
 
 static enum cfg_init_mode str2init_mode(const char *opt)
 {
 	int i;
-	for (i = 0; i < CFG_N_INIT_MODES; i++)
-		if (strcmp(opt, init_mode_str[i])==false)
+	for (i = 0; i < CFG_N_INIT_MODES+1; i++){
+		if ( strcmp(opt, init_mode_str[i]) == 0 ){
 			break;
-
-	return i == CFG_N_INIT_MODES ? CFG_NOT_DEF : i;
+		}
+	}
+	return i == CFG_N_INIT_MODES+1 ? CFG_NOT_DEF : i;
 }
 
 void config_print_usage(const char *arg0)
