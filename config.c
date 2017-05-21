@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#define BUFFER 256
 #define LINE_LEN 20
 
 static const char *init_mode_str[] = {
