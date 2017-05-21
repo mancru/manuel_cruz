@@ -1,6 +1,6 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
-
+#include <stdio.h> //para FILENAME_MAX
 #include <stdbool.h>
 
 enum cfg_init_mode {
@@ -17,6 +17,8 @@ struct config {
 	int size_x;
 	int size_y;
 	enum cfg_init_mode init_mode;
+	char * cfg_file;
+	//char cfg_file[FILENAME_MAX];
 };
 
 int config_parse_argv(struct config *config, int argc, char *argv[]);

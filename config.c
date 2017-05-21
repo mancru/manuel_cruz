@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#define BUFFER 256
+#define LINE_LEN 20
 
 static const char *init_mode_str[] = {
 	[CFG_DEFAULT] = "default",
@@ -21,18 +23,30 @@ static const struct option long_options[] =
 
 static bool check_config(const struct config *config);
 static enum cfg_init_mode str2init_mode(const char *opt);
+static bool load_config(struct config *config);
 
 int config_parse_argv(struct config *config, int argc, char *argv[])
 {
 	int option_index = 0;
-	int c;
-
 	// Default values
 	config->show_help = false;
 	config->size_x = 11;
 	config->size_y = 11;
 	config->init_mode = CFG_DEFAULT;
-
+	// Check for config file name
+	if (optind != argc) {
+		if (optind == argc - 1) {
+			config->cfg_file = argv[optind];
+			if (!load_config(config)){
+				return false;
+			}
+		} else {
+			return false;
+		}
+	return check_config(config);
+	}
+	// Parameters
+	int c;
 	while ((c = getopt_long(argc, argv, "hx:y:i:", long_options,
 				&option_index)) != -1) {
 		switch (c) {
@@ -56,7 +70,6 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
-
 	return check_config(config);
 }
 
@@ -108,4 +121,47 @@ void config_print(const struct config *config)
 	printf("\tinit_mode = %d(%s)\n",
 		config->init_mode, init_mode_str[config->init_mode]);
 	printf("}\n");
+}
+
+static bool load_config(struct config *config)
+{
+	FILE *file = fopen(config->cfg_file, "r");
+	if (!file){
+		perror("Config file could not be opened.");
+		fclose(file);
+		return false;
+	}
+
+    	char line[LINE_LEN];
+    	// Size x
+    	fgets(line, LINE_LEN, file);
+    	if (ferror(file)) {
+    		perror("Error reading config file");
+    		return false;
+    	}
+    	config->size_x = strtol(line, NULL, 0);
+	// Size y
+    	fgets(line, LINE_LEN, file);
+    	if (ferror(file)) {
+    		perror("Error reading config file");
+    		return false;
+    	}
+    	config->size_y = strtol(line, NULL, 0);
+	// Init mode
+    	fgets(line, LINE_LEN, file);
+    	if (ferror(file)) {
+    		perror("Error reading config file");
+    		return false;
+    	}
+	// Shortening the line of init_mode
+	int line_length = (int)strlen(line);
+	for (int i=0; i < line_length; i++){
+		if ( (line[i]==' ') || (line[i]=='\n') ){
+			line[i]='\0';
+		}
+	}
+	config->init_mode = str2init_mode( line );
+
+	fclose(file);
+	return true;
 }

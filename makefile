@@ -1,12 +1,10 @@
 CFLAGS := -Wall -Werror -std=c99
 
-# Rule avoid using Valgrind under Windows. Can be used as a fast way to
-# disable the valgrind instruction by changing ifndef (ON) to ifdef (OFF).
-
+# Rule avoid using Valgrind under windows
 ifndef COMSPEC
 	CFLAGS += -g
-	VFLAGS := --leak-check=full -v
-	VINSTR := valgrind $(VFLAGS) ./tgol
+	VFLAGS := --leak-check=full --track-origins=yes -v
+	VINSTR := valgrind $(VFLAGS) ./tgol config.txt
 endif
 
 .PHONY : all clean valgrind
@@ -28,6 +26,6 @@ gol.o : gol.c
 clean :
 	@rm -f *.o *.out
 
-# call it with "make valgrind"
+# called it with "make valgrind"
 valgrind :
 	$(VINSTR)

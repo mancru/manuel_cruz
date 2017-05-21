@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 	}
 
 	do {
-		printf("\033cIteration %d\n", i++);
+		printf("Iteration %d\n", i++);
+		//printf("\033cIteration %d\n", i++);
 		world_print(w);
 		world_iterate(w);
 	} while (getchar() != 'q');
