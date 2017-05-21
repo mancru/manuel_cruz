@@ -32,18 +32,6 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 	config->size_x = 11;
 	config->size_y = 11;
 	config->init_mode = CFG_DEFAULT;
-	// Check for config file name
-	if (optind != argc) {
-		if (optind == argc - 1) {
-			config->cfg_file = argv[optind];
-			if (!load_config(config)){
-				return false;
-			}
-		} else {
-			return false;
-		}
-	return check_config(config);
-	}
 	// Parameters
 	int c;
 	while ((c = getopt_long(argc, argv, "hx:y:i:", long_options,
@@ -67,6 +55,17 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 		default:
 			printf("Error\n");
 			exit(EXIT_FAILURE);
+		}
+	}
+	// Check for config file name
+	if (optind != argc) {
+		if (optind == argc - 1) {
+			config->cfg_file = argv[optind];
+			if (!load_config(config)){
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 	return check_config(config);
@@ -131,34 +130,34 @@ static bool load_config(struct config *config)
 		return false;
 	}
 
-    	char line[LINE_LEN];
-    	// Size x
-    	fgets(line, LINE_LEN, file);
-    	if (ferror(file)) {
-    		perror("Error reading config file");
-    		return false;
-    	}
-    	config->size_x = strtol(line, NULL, 0);
-	// Size y
-    	fgets(line, LINE_LEN, file);
-    	if (ferror(file)) {
-    		perror("Error reading config file");
-    		return false;
-    	}
-    	config->size_y = strtol(line, NULL, 0);
-	// Init mode
-    	fgets(line, LINE_LEN, file);
-    	if (ferror(file)) {
-    		perror("Error reading config file");
-    		return false;
-    	}
-	// Shortening the line of init_mode
-	int line_length = (int)strlen(line);
-	for (int i=0; i < line_length; i++){
-		if ( (line[i]==' ') || (line[i]=='\n') ){
-			line[i]='\0';
-		}
+	char line[LINE_LEN];
+	// Size x
+	fgets(line, LINE_LEN, file);
+	if (ferror(file)) {
+		perror("Error reading config file");
+		fclose(file);
+		return false;
 	}
+	config->size_x = strtol(line, NULL, 0);
+	// Size y
+	fgets(line, LINE_LEN, file);
+	if (ferror(file)) {
+		perror("Error reading config file");
+		fclose(file);
+		return false;
+	}
+	config->size_y = strtol(line, NULL, 0);
+	// Init mode
+	fgets(line, LINE_LEN, file);
+	if (ferror(file)) {
+		perror("Error reading config file");
+		fclose(file);
+		return false;
+	}
+	// Shortening the line of init_mode
+	char *line_feed = strchr(line, '\n');
+	if (line_feed)
+		* line_feed = '\0';
 	config->init_mode = str2init_mode( line );
 
 	fclose(file);
