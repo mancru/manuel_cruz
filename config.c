@@ -126,7 +126,6 @@ static bool load_config(struct config *config)
 	FILE *file = fopen(config->cfg_file, "r");
 	if (!file){
 		perror("Config file could not be opened.");
-		fclose(file);
 		return false;
 	}
 
@@ -158,7 +157,7 @@ static bool load_config(struct config *config)
 	char *line_feed = strchr(line, '\n');
 	if (line_feed)
 		* line_feed = '\0';
-	config->init_mode = str2init_mode( line );
+	config->init_mode = str2init_mode(line);
 
 	fclose(file);
 	return true;
