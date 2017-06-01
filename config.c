@@ -11,17 +11,25 @@ static const char *init_mode_str[] = {
 	[CFG_RANDOM]  = "random",
 };
 
+static const char *init_borders_str[] = {
+	[CFB_DEFAULT] = "default",
+	[CFB_LIMITED]  = "limited",
+	[CFB_TOROIDAL]  = "toroidal",
+};
+
 static const struct option long_options[] =
 {
-	{"help",   no_argument,       0, 'h'},
-	{"size_x", required_argument, 0, 'x'},
-	{"size_y", required_argument, 0, 'y'},
-	{"init", required_argument, 0, 'i'},
+	{"help",    no_argument,       0, 'h'},
+	{"size_x",  required_argument, 0, 'x'},
+	{"size_y",  required_argument, 0, 'y'},
+	{"init",    required_argument, 0, 'i'},
+	{"borders", required_argument, 0, 'b'},
 	{0, 0, 0, 0}
 };
 
 static bool check_config(const struct config *config);
 static enum cfg_init_mode str2init_mode(const char *opt);
+static enum cfb_borders_mode str2borders_mode(const char *opt);
 static bool load_config(struct config *config);
 
 int config_parse_argv(struct config *config, int argc, char *argv[])
@@ -32,6 +40,8 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 	config->size_x = 11;
 	config->size_y = 11;
 	config->init_mode = CFG_DEFAULT;
+	config->borders_mode = CFB_TOROIDAL;
+
 	// Parameters
 	int c;
 	while ((c = getopt_long(argc, argv, "hx:y:i:", long_options,
@@ -47,16 +57,18 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 			config->size_y = strtol(optarg, NULL, 0);
 			break;
 		case 'i':
-			config->init_mode = str2init_mode( optarg );
+			config->init_mode = str2init_mode(optarg);
+			break;
+		case 'b':
+			config->borders_mode = str2borders_mode(optarg);
 			break;
 		case '?':
-			printf("\nA wrong parameter was introduced\n");
-			config->show_help = true;
 		default:
 			printf("Error\n");
 			exit(EXIT_FAILURE);
 		}
 	}
+
 	// Check for config file name
 	if (optind != argc) {
 		if (optind == argc - 1) {
@@ -68,6 +80,7 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 			return false;
 		}
 	}
+
 	return check_config(config);
 }
 
@@ -81,6 +94,7 @@ static bool check_config(const struct config *config)
 	correct &= config->size_x > 0;
 	correct &= config->size_y > 0;
 	correct &= config->init_mode != CFG_NOT_DEF;
+	correct &= config->borders_mode != CFB_NOT_DEF;
 	return correct;
 }
 
@@ -95,6 +109,17 @@ static enum cfg_init_mode str2init_mode(const char *opt)
 	return i == CFG_N_INIT_MODES+1 ? CFG_NOT_DEF : i;
 }
 
+static enum cfb_borders_mode str2borders_mode(const char *opt)
+{
+	int i;
+	for (i = 0; i < CFB_N_BORDERS_MODES+1; i++){
+		if ( strcmp(opt, init_borders_str[i]) == 0 ){
+			break;
+		}
+	}
+	return i == CFB_N_BORDERS_MODES+1 ? CFB_NOT_DEF : i;
+}
+
 void config_print_usage(const char *arg0)
 {
 	printf("Usage: %s\n"
@@ -102,12 +127,17 @@ void config_print_usage(const char *arg0)
 		"\t[-x|--size_x <num>]\n"
 		"\t[-y|--size_y <num>]\n"
 		"\t[-i|--init <init_mode>]\n"
+		"\t[-b]--borders <borders_mode>]\n"
 		, arg0);
 
 	// Print all initialization modes
 	printf("\ninitialization modes:\n");
 	for (int i=0; i < _CFG_MAX_; i++)
 		printf("\t- %s\n", init_mode_str[i]);
+	// Print all borders mode
+	printf("\nborders mode:\n");
+	for (int i=0; i < _CFB_MAX_; i++)
+		printf("\t- %s\n", init_borders_str[i]);
 }
 
 void config_print(const struct config *config)
@@ -118,6 +148,8 @@ void config_print(const struct config *config)
 	printf("\tsize_y    = %d\n", config->size_y);
 	printf("\tinit_mode = %d(%s)\n",
 		config->init_mode, init_mode_str[config->init_mode]);
+	printf("\tborders_mode = %d(%s)\n",
+		config->borders_mode, init_borders_str[config->borders_mode]);
 	printf("}\n");
 }
 
@@ -126,6 +158,7 @@ static bool load_config(struct config *config)
 	FILE *file = fopen(config->cfg_file, "r");
 	if (!file){
 		perror("Config file could not be opened.");
+		fclose(file);
 		return false;
 	}
 
@@ -158,6 +191,19 @@ static bool load_config(struct config *config)
 	if (line_feed)
 		* line_feed = '\0';
 	config->init_mode = str2init_mode(line);
+	// borders_mode
+	fgets(line, LINE_LEN, file);
+	if (ferror(file)) {
+		perror("Error reading config file");
+		fclose(file);
+		return false;
+	}
+	// Shortening the line of init_mode
+	line_feed = NULL;
+	line_feed = strchr(line, '\n');
+	if (line_feed)
+		* line_feed = '\0';
+	config->borders_mode = str2borders_mode(line);
 
 	fclose(file);
 	return true;
