@@ -44,7 +44,7 @@ int config_parse_argv(struct config *config, int argc, char *argv[])
 
 	// Parameters
 	int c;
-	while ((c = getopt_long(argc, argv, "hx:y:i:", long_options,
+	while ((c = getopt_long(argc, argv, "hx:y:i:b:", long_options,
 				&option_index)) != -1) {
 		switch (c) {
 		case 'h':

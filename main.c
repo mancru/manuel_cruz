@@ -9,7 +9,6 @@
 int main(int argc, char *argv[])
 {
 	struct config config;
-	struct world * world;
 
 	if (!config_parse_argv(&config, argc, argv)){
 		printf("ERROR\n");
@@ -46,8 +45,12 @@ int main(int argc, char *argv[])
 	} while (getchar() != 'q');
 
 	if (w){
-		world=(struct world *)w;
-		world->world_free(w);
+		if (borders == CFB_DEFAULT ||
+			borders == CFB_TOROIDAL){
+				world_toroidal_free(w);
+		} else if (borders == CFB_LIMITED){
+			world_limited_free(w);
+		}
 	}
 	return EXIT_SUCCESS;
 }

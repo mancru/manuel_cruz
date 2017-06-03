@@ -25,9 +25,8 @@ void world_init(struct config * config, struct world * w)
 
 	w->cells[0] = (bool *)malloc(w->size_x*w->size_y*sizeof(bool));
 	if (!w->cells[0]){
-		free(w->cells[0]);
+		free(w);
 		perror("World 1 could not be allocated!\n");
-		exit(-11);
 	}
 
 	w->cells[1] = (bool *)malloc(w->size_x *w->size_y*sizeof(bool));
@@ -35,15 +34,7 @@ void world_init(struct config * config, struct world * w)
 		free(w->cells[0]);
 		free(w);
 		perror("World 2 could not be allocated!\n");
-		exit(-12);
 	}
-
-	//Punteros a las funciones
-	w->world_alloc = world_alloc;
-	w->world_free = world_free;
-	w->world_iterate = world_iterate;
-	w->world_print = world_print;
-	w->count_neighbors = count_neighbors;
 
 	//Inicialización del mundo
 	for (int i=0;i<w->size_x;i++){
@@ -89,7 +80,7 @@ void world_iterate(struct world *w)
 	for (int i = 0; i < w->size_x; i++){
 		for (int j = 0; j < w->size_y; j++){
 			cell = w->get_cell(w, i, j);
-			n_alive_neighbors = w->count_neighbors(w, i, j);
+			n_alive_neighbors = count_neighbors(w, i, j);
 			if ((n_alive_neighbors==3) || (cell && n_alive_neighbors==2)){
 				w->set_cell(w, 1, i, j, ALIVE);
 			} else {
@@ -120,5 +111,4 @@ void world_free(struct world *w)
 {
 	free(w->cells[0]);
 	free(w->cells[1]);
-	free(w);
 }

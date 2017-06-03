@@ -4,9 +4,14 @@
 
 struct config config;
 
-void set_cell_limited(struct world_limited *wl, int buf, int x, int y, bool val);
-bool get_cell_limited(const struct world_limited *wl, int x, int y);
-void world_limited_free(struct world_limited * wl);
+struct world_limited
+{
+	struct world super;
+};
+
+
+static void set_cell(struct world_limited *wl, int buf, int x, int y, bool val);
+static bool get_cell(const struct world_limited *wl, int x, int y);
 
 struct world_limited * world_limited_alloc(struct config * config)
 {
@@ -17,22 +22,21 @@ struct world_limited * world_limited_alloc(struct config * config)
 		return NULL;
 	}
 
-	wl->super.set_cell = (void *)set_cell_limited;
-	wl->super.get_cell = (void *)get_cell_limited;
+	wl->super.set_cell = (void *)set_cell;
+	wl->super.get_cell = (void *)get_cell;
 	world_init(config, (struct world *)wl);
-	wl->super.world_free = (void *)world_limited_free;
 	return wl;
 }
 
-void set_cell_limited(struct world_limited *wl, int buf, int x, int y, bool val)
+void set_cell(struct world_limited *wl, int buf, int x, int y, bool val)
 {
 	* (wl->super.cells[buf] + x*(wl->super.size_y)+y) = val;
 }
 
-bool get_cell_limited(const struct world_limited *wl, int x, int y)
+bool get_cell(const struct world_limited *wl, int x, int y)
 {
 	bool cell;
-	if (x<0 || y>(wl->super.size_y-1))
+	if (x<0 || x>(wl->super.size_x-1) || y<0 || y>(wl->super.size_y-1))
 		return DEAD;
 	else
 		cell = * (wl->super.cells[0] + x*(wl->super.size_y)+y);
@@ -41,14 +45,6 @@ bool get_cell_limited(const struct world_limited *wl, int x, int y)
 }
 void world_limited_free(struct world_limited * wl)
 {
-	if (wl->super.cells[0])
-		free(wl->super.cells[0]);
-	if (wl->super.cells[1])
-		free(wl->super.cells[1]);
-	if (wl){ 
-		free(wl);
-	} else {
-		printf("WARNING: wl was not initialised\n");
-		exit(-1);
-	}
+	world_free((struct world *)wl);
+	free(wl);
 }
