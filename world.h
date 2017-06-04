@@ -17,6 +17,6 @@ void world_free(struct world *w);
 
 void world_print(const struct world *w);
 void world_iterate(struct world *w);
-void world_init (struct config * config, struct world * w);
+struct world *world_init (struct config * config, struct world * w);
 
 #endif

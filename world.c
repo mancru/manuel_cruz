@@ -18,7 +18,7 @@ struct world *world_alloc(struct config * config)
 	return w;
 }
 
-void world_init(struct config * config, struct world * w)
+struct world *world_init(struct config * config, struct world * w)
 {
 	w->size_x = config->size_x;
 	w->size_y = config->size_y;
@@ -27,6 +27,7 @@ void world_init(struct config * config, struct world * w)
 	if (!w->cells[0]){
 		free(w);
 		perror("World 1 could not be allocated!\n");
+		return NULL;
 	}
 
 	w->cells[1] = (bool *)malloc(w->size_x *w->size_y*sizeof(bool));
@@ -34,6 +35,7 @@ void world_init(struct config * config, struct world * w)
 		free(w->cells[0]);
 		free(w);
 		perror("World 2 could not be allocated!\n");
+		return NULL;
 	}
 
 	//Inicialización del mundo
@@ -58,6 +60,7 @@ void world_init(struct config * config, struct world * w)
 			}
 		}
 	}
+	return w;
 }
 
 void world_print(const struct world * w)
@@ -111,4 +114,5 @@ void world_free(struct world *w)
 {
 	free(w->cells[0]);
 	free(w->cells[1]);
+	free(w);
 }
