@@ -1,0 +1,5 @@
+# Files and folders to be ignored
+a.out
+*.out
+*.exe
+*~ # Temporary files
