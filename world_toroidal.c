@@ -7,9 +7,9 @@ struct world_toroidal
 	struct world super;
 };
 
-static void set_cell(struct world *wt, int buf, int x, int y, bool val);
+static void set_cell(struct world *wt, int x, int y, bool val);
 static bool get_cell(const struct world *wt, int x, int y);
-static void fix_coords(const struct world *wt, int *x, int *y);
+static bool fix_coords(const struct world *wt, int *x, int *y);
 
 struct world_toroidal * world_toroidal_alloc(struct config * config)
 {
@@ -24,6 +24,7 @@ struct world_toroidal * world_toroidal_alloc(struct config * config)
 	// cambia o añade funciones
 	wt->super.set_cell = set_cell;
 	wt->super.get_cell = get_cell;
+	wt->super.fix_coords = fix_coords;
 
 	// inicializar el mundo
 	wt = (struct world_toroidal *)world_init(config, (struct world *)wt);
@@ -31,9 +32,9 @@ struct world_toroidal * world_toroidal_alloc(struct config * config)
 	return wt;
 }
 
-void set_cell(struct world *wt, int buf, int x, int y, bool val)
+void set_cell(struct world *wt, int x, int y, bool val)
 {
-	* (wt->cells[buf] + x*(wt->size_y)+y) = val;
+	* (wt->cells + x*(wt->size_y)+y) = val;
 }
 
 bool get_cell(const struct world *wt, int x, int y)
@@ -42,11 +43,11 @@ bool get_cell(const struct world *wt, int x, int y)
 	int * ptrx = &x;
 	int * ptry = &y;
 	fix_coords(wt, ptrx, ptry);
-	cell = * (wt->cells[0] + x*(wt->size_y)+y);
+	cell = * (wt->cells + x*(wt->size_y)+y);
 	return cell;
 }
 
-void fix_coords(const struct world *wt, int *x, int *y)
+bool fix_coords(const struct world *wt, int *x, int *y)
 {
 	if (*x < 0){
 		*x=(wt->size_x)-1;
@@ -59,6 +60,7 @@ void fix_coords(const struct world *wt, int *x, int *y)
 	} else if ( *y >= (wt->size_y) ){
 		*y=0;
 	}
+	return true;
 }
 
 void world_toroidal_free(struct world_toroidal * wt)

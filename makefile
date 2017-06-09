@@ -10,8 +10,8 @@ endif
 .PHONY : all clean valgrind gdb woflags
 
 # valgrind is called if a new tgol is created
-tgol : main.o world.o config.o world_toroidal.o world_limited.o
-	gcc $(CFLAGS) main.o world.o config.o world_toroidal.o world_limited.o -o tgol; \
+tgol : main.o world.o cell.o config.o world_toroidal.o world_limited.o
+	gcc $(CFLAGS) main.o world.o cell.o config.o world_toroidal.o world_limited.o -o tgol; \
 	$(VINSTR)
 
 main.o : main.c
@@ -29,15 +29,18 @@ config.o : config.c
 world.o : world.c
 	gcc $(CFLAGS) -c world.c
 
+cell.o : cell.c
+	gcc $(CFLAGS) -c cell.c
+
 clean :
-	@rm -f *.o *.out
+	@rm -f *.o *.out tgol
 
 # called it with "make valgrind"
 valgrind :
 	valgrind $(VFLAGS) ./tgol
 # called it with "make gdb"
 gdb :
-	gdb tgol
+	gdb -tui tgol
 
 # build without error flags "make gdb"
 woflags : main.o world.o config.o world_toroidal.o world_limited.o
